@@ -2240,7 +2240,7 @@ void doSplash()
     lcdSetRefVolt(contrast);
 #endif
 
-    getADC(); // init ADC array
+    // getADC(); // init ADC array, already done in opentxStart()
 
     inputsMoved();
 
@@ -2349,7 +2349,7 @@ void checkTHR()
   }
 #else
   if (g_model.disableThrottleWarning) return;
-  getADC();
+  // getADC(); already done in opentxStart
   evalInputs(e_perout_mode_notrainer); // let do evalInputs do the job
   int16_t v = calibratedStick[thrchn];   
   if (v<=(THRCHK_DEADBAND-1024)) return;  // prevent warning if throttle input OK
@@ -3100,8 +3100,8 @@ void evalInputs(uint8_t mode)
         if (td->mode) {
           uint8_t chStud = td->srcChn;
           int32_t vStud  = (g_ppmIns[chStud]- g_eeGeneral.trainer.calib[chStud]);
-          vStud *= td->studWeight;
-          vStud /= 50;
+          vStud *= calc100to256(td->studWeight);
+          vStud>>=7;   // divide by 128 --> = vStud*(td->studWeight)/50
           switch (td->mode) {
             case 1: v += vStud;   break; // add-mode
             case 2: v  = vStud;   break; // subst-mode
@@ -4425,6 +4425,7 @@ uint8_t calcStickScroll( uint8_t index )
 
 void opentxStart()
 {
+  getADC(); // init ADC array
   doSplash();
 
 #if defined(PCBSKY9X) && defined(SDCARD) && !defined(SIMU)
@@ -4856,7 +4857,7 @@ ISR(TIMER_AUDIO_VECT, ISR_NOBLOCK)
 {
   cli();
   PAUSE_AUDIO_INTERRUPT(); // stop reentrance
-  sei();
+  sei(); 
 
 #if defined(AUDIO)
   AUDIO_DRIVER();
@@ -4868,7 +4869,7 @@ ISR(TIMER_AUDIO_VECT, ISR_NOBLOCK)
 
   cli();
   RESUME_AUDIO_INTERRUPT();
-  sei();
+  sei(); 
 }
 #endif
 
@@ -4901,7 +4902,7 @@ ISR(TIMER_10MS_VECT, ISR_NOBLOCK)
 // count delta values thus can range from about 1600 to 4400 counts (800us to 2200us),
 // corresponding to a PPM signal in the range 0.8ms to 2.2ms (1.5ms at center).
 // (The timer is free-running and is thus not reset to zero at each capture interval.)
-ISR(TIMER3_CAPT_vect) // G: High frequency noise can cause stack overflo with ISR_NOBLOCK
+ISR(TIMER3_CAPT_vect) // G: High frequency noise can cause stack overflow with ISR_NOBLOCK
 {
   static uint16_t lastCapt;
 
