@@ -543,13 +543,21 @@ void evalInputs(uint8_t mode)
 uint8_t mixerCurrentFlightMode;
 void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
 {
+  TRACE_BUG(5, 1);
+
   evalInputs(mode);
 
+  TRACE_BUG(5, 2);
+
   if (tick10ms) evalLogicalSwitches(mode==e_perout_mode_normal);
+
+  TRACE_BUG(5, 3);
 
 #if defined(MODULE_ALWAYS_SEND_PULSES)
   checkStartupWarnings();
 #endif
+
+  TRACE_BUG(5, 4);
 
 #if defined(HELI)
   if (g_model.swashR.value) {
@@ -613,7 +621,11 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
   }
 #endif
 
+  TRACE_BUG(5, 5);
+
   memclear(chans, sizeof(chans));        // All outputs to 0
+
+  TRACE_BUG(5, 6);
 
   //========== MIXER LOOP ===============
   uint8_t lv_mixWarning = 0;
@@ -948,6 +960,8 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
 
   } while (++pass < 5 && dirtyChannels);
 
+  TRACE_BUG(5, 8);
+
   mixWarning = lv_mixWarning;
 }
 
@@ -964,6 +978,8 @@ uint8_t   flightModeTransitionLast = 255;
 
 void evalMixes(uint8_t tick10ms)
 {
+  TRACE_BUG(5, 9);
+
 #if defined(PCBGRUVIN9X) && defined(DEBUG) && !defined(VOICE)
   PORTH |= 0x40; // PORTH:6 LOW->HIGH signals start of mixer interrupt
 #endif
@@ -1003,6 +1019,8 @@ void evalMixes(uint8_t tick10ms)
     lastFlightMode = fm;
   }
 
+  TRACE_BUG(5, 10);
+
 #if defined(CPUARM)
   if (flightModeTransitionTime && get_tmr10ms() > flightModeTransitionTime+SWITCHES_DELAY()) {
     flightModeTransitionTime = 0;
@@ -1013,6 +1031,8 @@ void evalMixes(uint8_t tick10ms)
     }
   }
 #endif
+
+  TRACE_BUG(5, 11);
 
   int32_t weight = 0;
   if (flightModesFade) {
@@ -1036,6 +1056,8 @@ void evalMixes(uint8_t tick10ms)
     evalFlightModeMixes(e_perout_mode_normal, tick10ms);
   }
 
+  TRACE_BUG(5, 12);
+
   //========== FUNCTIONS ===============
   // must be done after mixing because some functions use the inputs/channels values
   // must be done before limits because of the applyLimit function: it checks for safety switches which would be not initialized otherwise
@@ -1045,6 +1067,8 @@ void evalMixes(uint8_t tick10ms)
 #endif
     evalFunctions();
   }
+
+  TRACE_BUG(5, 13);
 
   //========== LIMITS ===============
   for (uint8_t i=0; i<NUM_CHNOUT; i++) {
@@ -1067,6 +1091,8 @@ void evalMixes(uint8_t tick10ms)
     channelOutputs[i] = value;  // copy consistent word to int-level
     sei();
   }
+
+  TRACE_BUG(5, 14);
 
   if (tick10ms && flightModesFade) {
     uint16_t tick_delta = delta * tick10ms;
@@ -1092,6 +1118,9 @@ void evalMixes(uint8_t tick10ms)
       }
     }
   }
+
+  TRACE_BUG(5, 15);
+
 
 #if defined(PCBGRUVIN9X) && defined(DEBUG) && !defined(VOICE)
   PORTH &= ~0x40; // PORTH:6 HIGH->LOW signals end of mixer interrupt

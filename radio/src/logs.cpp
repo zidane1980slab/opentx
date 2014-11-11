@@ -174,6 +174,9 @@ void writeLogs()
   static const pm_char * error_displayed = NULL;
 
   if (isFunctionActive(FUNCTION_LOGS) && logDelay > 0) {
+
+    TRACE_BUG(4, 1);
+
     tmr10ms_t tmr10ms = get_tmr10ms();
     if (lastLogTime == 0 || (tmr10ms_t)(tmr10ms - lastLogTime) >= (tmr10ms_t)logDelay*10) {
       lastLogTime = tmr10ms;
@@ -197,6 +200,8 @@ void writeLogs()
       f_printf(&g_oLogFile, "%d,", tmr10ms);
 #endif
 
+      TRACE_BUG(4, 2);
+
 #if defined(FRSKY)
 #if defined(PCBTARANIS) && defined(REVPLUS)
       if (IS_VALID_XJT_VERSION())
@@ -213,6 +218,8 @@ void writeLogs()
         f_printf(&g_oLogFile, "%d.%02d,", converted_value/100, converted_value%100);
       }
 #endif
+
+      TRACE_BUG(4, 3);
 
 #if defined(FRSKY_HUB)
       TELEMETRY_BARO_ALT_PREPARE();
@@ -252,15 +259,21 @@ void writeLogs()
       }
 #endif
 
+      TRACE_BUG(4, 4);
+
 #if defined(WS_HOW_HIGH)
       if (IS_USR_PROTO_WS_HOW_HIGH()) {
         f_printf(&g_oLogFile, "%d,", TELEMETRY_RELATIVE_BARO_ALT_BP);
       }
 #endif
 
+      TRACE_BUG(4, 5);
+
       for (uint8_t i=0; i<NUM_STICKS+NUM_POTS; i++) {
         f_printf(&g_oLogFile, "%d,", calibratedStick[i]);
       }
+
+      TRACE_BUG(4, 6);
 
 #if defined(PCBTARANIS)
       int result = f_printf(&g_oLogFile, "%d,%d,%d,%d,%d,%d,%d,%d\n",
@@ -283,11 +296,16 @@ void writeLogs()
           get2PosState(TRN));
 #endif
 
+      TRACE_BUG(4, 7);
+
       if (result<0 && !error_displayed) {
         error_displayed = STR_SDCARD_ERROR;
         POPUP_WARNING(STR_SDCARD_ERROR);
         closeLogs();
       }
+
+      TRACE_BUG(4, 8);
+
     }
   }
   else {

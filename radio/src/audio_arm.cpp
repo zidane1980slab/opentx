@@ -684,6 +684,8 @@ int ToneContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 
 void AudioQueue::wakeup()
 {
+  TRACE_BUG(6, 1);
+
   int result;
   AudioBuffer *buffer = getEmptyBuffer();
   if (buffer) {
@@ -695,12 +697,16 @@ void AudioQueue::wakeup()
       buffer->data[i] = 0x8000 >> 4; /* silence */
     }
 
+    TRACE_BUG(6, 2);
+
     // mix the priority context (only tones)
     result = priorityContext.mixBuffer(buffer, g_eeGeneral.beepVolume, fade);
     if (result > 0) {
       size = result;
       fade += 1;
     }
+
+    TRACE_BUG(6, 3);
 
     // mix the normal context (tones and wavs)
     if (normalContext.fragment.type == FRAGMENT_TONE) {
@@ -720,6 +726,7 @@ void AudioQueue::wakeup()
       fade += 1;
     }
     else {
+      TRACE_BUG(6, 4);
       CoEnterMutexSection(audioMutex);
       if (ridx != widx) {
         normalContext.tone.setFragment(fragments[ridx]);
@@ -727,8 +734,11 @@ void AudioQueue::wakeup()
           ridx = (ridx + 1) % AUDIO_QUEUE_LENGTH;
         }
       }
+      TRACE_BUG(6, 5);
       CoLeaveMutexSection(audioMutex);
     }
+
+    TRACE_BUG(6, 6);
 
     // mix the vario context
     result = varioContext.mixBuffer(buffer, g_eeGeneral.varioVolume, fade);
@@ -737,6 +747,7 @@ void AudioQueue::wakeup()
       fade += 1;
     }
 
+    TRACE_BUG(6, 7);
     // mix the background context
     if (isFunctionActive(FUNCTION_BACKGND_MUSIC) && !isFunctionActive(FUNCTION_BACKGND_MUSIC_PAUSE)) {
       result = backgroundContext.mixBuffer(buffer, g_eeGeneral.backgroundVolume, fade);
@@ -745,6 +756,7 @@ void AudioQueue::wakeup()
       }
     }
 
+    TRACE_BUG(6, 8);
     // push the buffer if needed
     if (size > 0) {
       __disable_irq();
@@ -753,7 +765,11 @@ void AudioQueue::wakeup()
       buffer->state = dacQueue(buffer) ? AUDIO_BUFFER_PLAYING : AUDIO_BUFFER_FILLED;
       __enable_irq();
     }
+
+    TRACE_BUG(6, 9);
   }
+
+  TRACE_BUG(6, 10);
 }
 
 inline unsigned int getToneLength(uint16_t len)
@@ -847,6 +863,8 @@ void AudioQueue::playFile(const char *filename, uint8_t flags, uint8_t id)
   fflush(stdout);
 #else
 
+  TRACE_BUG(1, 1);
+
   if (!sdMounted())
     return;
 
@@ -859,6 +877,8 @@ void AudioQueue::playFile(const char *filename, uint8_t flags, uint8_t id)
   }
 
   CoEnterMutexSection(audioMutex);
+
+  TRACE_BUG(1, 2);
 
   if (flags & PLAY_BACKGROUND) {
     backgroundContext.clear();
@@ -879,6 +899,8 @@ void AudioQueue::playFile(const char *filename, uint8_t flags, uint8_t id)
       widx = next_widx;
     }
   }
+
+  TRACE_BUG(1, 3);
 
   CoLeaveMutexSection(audioMutex);
 #endif
@@ -928,12 +950,16 @@ void AudioQueue::flush()
 
 void audioEvent(uint8_t e, uint16_t f)
 {
+  TRACE_BUG(2, 1);
+
 #if defined(HAPTIC)
   if (e != AU_TADA) {
     // TODO could be done better, with TADA not part of errors
     haptic.event(e); //do this before audio to help sync timings
   }
 #endif
+
+  TRACE_BUG(2, 2);
 
   if (e <= AU_ERROR || (e >= AU_WARNING1 && e < AU_FRSKY_FIRST)) {
     if (g_eeGeneral.alarmsFlash) {
@@ -946,6 +972,7 @@ void audioEvent(uint8_t e, uint16_t f)
     char filename[AUDIO_FILENAME_MAXLEN+1];
     if (e < AU_FRSKY_FIRST && isAudioFileReferenced(e, filename)) {
       audioQueue.playFile(filename);
+      TRACE_BUG(2, 3);
     }
     else
 #endif

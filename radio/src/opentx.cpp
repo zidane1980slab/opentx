@@ -190,6 +190,8 @@ void watchdogSetTimeout(uint32_t timeout)
 
 void per10ms()
 {
+  TRACE_BUG(3, 1);
+
   g_tmr10ms++;
 
 #if defined(CPUARM)
@@ -223,7 +225,11 @@ void per10ms()
   }
 #endif
 
+  TRACE_BUG(3, 2);
+
   readKeysAndTrims();
+
+  TRACE_BUG(3, 3);
 
 #if defined(ROTARY_ENCODER_NAVIGATION)
   if (IS_RE_NAVIGATION_ENABLE()) {
@@ -246,15 +252,21 @@ void per10ms()
   }
 #endif
 
+  TRACE_BUG(3, 4);
+
 #if defined(FRSKY) || defined(JETI)
-  if (!IS_DSM2_SERIAL_PROTOCOL(s_current_protocol[0]))
+  if (!IS_DSM2_SERIAL_PROTOCOL(s_current_protocol[0])) {
     telemetryInterrupt10ms();
+  }
 #endif
+
+  TRACE_BUG(3, 5);
 
   // These moved here from evalFlightModeMixes() to improve beep trigger reliability.
 #if defined(PWM_BACKLIGHT)
-  if ((g_tmr10ms&0x03) == 0x00)
+  if ((g_tmr10ms&0x03) == 0x00) {
     backlightFade(); // increment or decrement brightness until target brightness is reached
+  }
 #endif
 
 #if !defined(AUDIO)
@@ -266,6 +278,8 @@ void per10ms()
 #if defined(SDCARD)
   sdPoll10ms();
 #endif
+
+  TRACE_BUG(3, 6);
 
   heartbeat |= HEART_TIMER_10MS;
 }
@@ -2642,6 +2656,8 @@ void usbJoystickUpdate(void)
 
 void perMain()
 {
+  TRACE_BUG(7, 1);
+
 #if defined(SIMU)
   doMixerCalculations();
 #elif !defined(CPUARM)
@@ -2699,6 +2715,8 @@ void perMain()
   Tenms = 0 ;
 #endif
 
+  TRACE_BUG(7, 2);
+
 #if defined(PCBSKY9X)
   Current_accumulator += Current_analogue ;
   static uint32_t OneSecTimer;
@@ -2723,6 +2741,8 @@ void perMain()
   }
 #endif
 
+  TRACE_BUG(7, 3);
+
   if (!usbPlugged()) {
     // TODO merge these 2 branches
 #if defined(PCBSKY9X)
@@ -2745,14 +2765,20 @@ void perMain()
 #endif
   }
 
+  TRACE_BUG(7, 4);
+
 #if defined(SDCARD)
   sdMountPoll();
   writeLogs();
 #endif
 
+  TRACE_BUG(7, 5);
+
 #if defined(CPUARM) && defined(SIMU)
   checkTrims();
 #endif
+
+  TRACE_BUG(7, 6);
 
 #if defined(CPUARM)
   uint8_t evt = getEvent(false);
@@ -2768,6 +2794,8 @@ void perMain()
 #if !defined(CPUARM) && (defined(FRSKY) || defined(MAVLINK))
   telemetryWakeup();
 #endif
+
+  TRACE_BUG(7, 7);
 
 #if defined(PCBTARANIS)
   uint8_t requiredTrainerMode = g_model.trainerMode;
@@ -2786,6 +2814,8 @@ void perMain()
   }
 #endif
 
+  TRACE_BUG(7, 8);
+
 #if defined(PCBTARANIS) && !defined(SIMU)
   static bool usbStarted = false;
   if (!usbStarted && usbPlugged()) {
@@ -2799,6 +2829,8 @@ void perMain()
     usbStarted = true;
   }
   
+  TRACE_BUG(7, 9);
+
 #if defined(USB_JOYSTICK)
   if (usbStarted) {
     if (!usbPlugged()) {
@@ -2878,6 +2910,8 @@ void perMain()
   StickScrollAllowed = 1 ;
 #endif
 
+  TRACE_BUG(7, 9);
+
 #if defined(USB_MASS_STORAGE)
   if (usbPlugged()) {
     lcd_clear();
@@ -2894,9 +2928,13 @@ void perMain()
       g_menuStack[g_menuStackPtr]((warn || menu) ? 0 : evt);
     }
 
+    TRACE_BUG(7, 10);
+
 #if defined(LUA)
     luaTask(evt);
 #endif
+
+    TRACE_BUG(7, 11);
 
     if (!LCD_LOCKED()) {
       if (warn) DISPLAY_WARNING(evt);
@@ -2912,9 +2950,15 @@ void perMain()
     }
   }
 
+  TRACE_BUG(7, 12);
+
   drawStatusLine();
 
+  TRACE_BUG(7, 13);
+
   lcdRefresh(LCD_REFRESH_DONT_WAIT);
+
+  TRACE_BUG(7, 14);
 
   if (SLAVE_MODE()) {
     JACK_PPM_OUT();
@@ -2986,6 +3030,9 @@ void perMain()
 #endif
     }
   }
+
+    TRACE_BUG(7, 15);
+
 }
 
 int16_t g_ppmIns[NUM_TRAINER];
