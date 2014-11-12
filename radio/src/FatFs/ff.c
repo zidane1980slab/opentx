@@ -122,8 +122,9 @@
 #include "ff.h"			/* Declarations of FatFs API */
 #include "diskio.h"		/* Declarations of disk I/O functions */
 
-
-
+#if defined(BOOT)
+#define TRACE_BUG(...)
+#endif
 
 /*--------------------------------------------------------------------------
 
@@ -141,14 +142,14 @@
 #if _USE_LFN == 1
 #error Static LFN work area cannot be used at thread-safe configuration
 #endif
-#define	ENTER_FF(fs)		{ if (!lock_fs(fs)) return FR_TIMEOUT; }
-#define	LEAVE_FF(fs, res)	{ unlock_fs(fs, res); return res; }
+#define	ENTER_FF(fs)		{ TRACE_BUG(20, 17); if (!lock_fs(fs)) { TRACE_BUG(20, 16); return FR_TIMEOUT; } }
+#define	LEAVE_FF(fs, res)	{ unlock_fs(fs, res); TRACE_BUG(20, 18); return res; }
 #else
 #define	ENTER_FF(fs)
 #define LEAVE_FF(fs, res)	return res
 #endif
 
-#define	ABORT(fs, res)		{ fp->err = (BYTE)(res); LEAVE_FF(fs, res); }
+#define	ABORT(fs, res)		{ fp->err = (BYTE)(res); TRACE_BUG(20, 19); LEAVE_FF(fs, res); }
 
 
 /* Definitions of sector size */
@@ -2580,17 +2581,23 @@ FRESULT f_read (
 	BYTE csect, *rbuff = (BYTE*)buff;
 
 
+	TRACE_BUG(20, 1);
+
 	*br = 0;	/* Clear read byte counter */
 
 	res = validate(fp);							/* Check validity */
 	if (res != FR_OK) LEAVE_FF(fp->fs, res);
-	if (fp->err)								/* Check error */
+	if (fp->err)	{							/* Check error */
+	  TRACE_BUG(20, 2);
 		LEAVE_FF(fp->fs, (FRESULT)fp->err);
-	if (!(fp->flag & FA_READ)) 					/* Check access mode */
+	}
+	if (!(fp->flag & FA_READ))  {					/* Check access mode */
+	  TRACE_BUG(20, 3);
 		LEAVE_FF(fp->fs, FR_DENIED);
+	}
 	remain = fp->fsize - fp->fptr;
 	if (btr > remain) btr = (UINT)remain;		/* Truncate btr by remaining bytes */
-
+	TRACE_BUG(20, 4);
 	for ( ;  btr;								/* Repeat until all data read */
 		rbuff += rcnt, fp->fptr += rcnt, *br += rcnt, btr -= rcnt) {
 		if ((fp->fptr % SS(fp->fs)) == 0) {		/* On the sector boundary? */
@@ -2606,11 +2613,13 @@ FRESULT f_read (
 #endif
 						clst = get_fat(fp->fs, fp->clust);	/* Follow cluster chain on the FAT */
 				}
+				TRACE_BUG(20, 5);
 				if (clst < 2) ABORT(fp->fs, FR_INT_ERR);
 				if (clst == 0xFFFFFFFF) ABORT(fp->fs, FR_DISK_ERR);
 				fp->clust = clst;				/* Update current cluster */
 			}
 			sect = clust2sect(fp->fs, fp->clust);	/* Get current sector */
+			TRACE_BUG(20, 6);
 			if (!sect) ABORT(fp->fs, FR_INT_ERR);
 			sect += csect;
 			cc = btr / SS(fp->fs);				/* When remaining bytes >= sector size, */
@@ -2635,29 +2644,39 @@ FRESULT f_read (
 			if (fp->dsect != sect) {			/* Load data sector if not in cache */
 #if !_FS_READONLY
 				if (fp->flag & FA__DIRTY) {		/* Write-back dirty sector cache */
-					if (disk_write(fp->fs->drv, fp->buf, fp->dsect, 1) != RES_OK)
-						ABORT(fp->fs, FR_DISK_ERR);
+					if (disk_write(fp->fs->drv, fp->buf, fp->dsect, 1) != RES_OK) {
+					  TRACE_BUG(20, 7);
+					  ABORT(fp->fs, FR_DISK_ERR);
+					}
 					fp->flag &= ~FA__DIRTY;
+					TRACE_BUG(20, 8);
 				}
 #endif
-				if (disk_read(fp->fs->drv, fp->buf, sect, 1) != RES_OK)	/* Fill sector cache */
+				if (disk_read(fp->fs->drv, fp->buf, sect, 1) != RES_OK)	/* Fill sector cache */ {
+				  TRACE_BUG(20, 10);
 					ABORT(fp->fs, FR_DISK_ERR);
+				}
 			}
 #endif
 			fp->dsect = sect;
+			TRACE_BUG(20, 11);
 		}
 		rcnt = SS(fp->fs) - ((UINT)fp->fptr % SS(fp->fs));	/* Get partial sector data from sector buffer */
 		if (rcnt > btr) rcnt = btr;
 #if _FS_TINY
-		if (move_window(fp->fs, fp->dsect) != FR_OK)		/* Move sector window */
+		if (move_window(fp->fs, fp->dsect) != FR_OK) 		/* Move sector window */
 			ABORT(fp->fs, FR_DISK_ERR);
 		mem_cpy(rbuff, &fp->fs->win[fp->fptr % SS(fp->fs)], rcnt);	/* Pick partial sector */
 #else
+		TRACE_BUG(20, 12);
 		mem_cpy(rbuff, &fp->buf[fp->fptr % SS(fp->fs)], rcnt);	/* Pick partial sector */
+		TRACE_BUG(20, 13);
 #endif
 	}
 
 	LEAVE_FF(fp->fs, FR_OK);
+
+	TRACE_BUG(20, 20);
 }
 
 
