@@ -147,7 +147,7 @@
 #define LEAVE_FF2(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 15); return res; }
 #define LEAVE_FF3(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 14); return res; }
 #define LEAVE_FF4(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 21); return res; }
-#define LEAVE_FF5(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 22); return res; }
+#define LEAVE_FF5(fs, res)       { TRACE_BUG(21, 32);  unlock_fs(fs, res); TRACE_BUG(21, 33); return res; }
 #define LEAVE_FF6(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 23); return res; }
 #define LEAVE_FF7(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 24); return res; }
 #define LEAVE_FF8(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 25); return res; }
@@ -551,6 +551,7 @@ static WCHAR LfnBuf[_MAX_LFN+1];
 #define	DEF_NAMEBUF			BYTE sfn[12]; WCHAR *lfn
 #define INIT_BUF(dobj)		{ lfn = ff_memalloc((_MAX_LFN + 1) * 2); if (!lfn) LEAVE_FF((dobj).fs, FR_NOT_ENOUGH_CORE); (dobj).lfn = lfn; (dobj).fn = sfn; }
 #define	FREE_BUF()			ff_memfree(lfn)
+NOTHERE
 #else
 #error Wrong _USE_LFN setting
 #endif
@@ -2460,6 +2461,7 @@ FRESULT f_open (
 	BYTE *dir;
 	DEF_NAMEBUF;
 
+	TRACE_BUG(21, 1);
 
 	if (!fp) return FR_INVALID_OBJECT;
 	fp->fs = 0;			/* Clear file object */
@@ -2468,23 +2470,34 @@ FRESULT f_open (
 #if !_FS_READONLY
 	mode &= FA_READ | FA_WRITE | FA_CREATE_ALWAYS | FA_OPEN_ALWAYS | FA_CREATE_NEW;
 	res = find_volume(&dj.fs, &path, (BYTE)(mode & ~FA_READ));
+	TRACE_BUG(21, 2);
 #else
 	mode &= FA_READ;
 	res = find_volume(&dj.fs, &path, 0);
 #endif
 	if (res == FR_OK) {
+	  TRACE_BUG(21, 3);
 		INIT_BUF(dj);
+		TRACE_BUG(21, 4);
 		res = follow_path(&dj, path);	/* Follow the file path */
+		TRACE_BUG(21, 5);
 		dir = dj.dir;
 #if !_FS_READONLY	/* R/W configuration */
 		if (res == FR_OK) {
-			if (!dir)	/* Default directory itself */
+			if (!dir) {	/* Default directory itself */
 				res = FR_INVALID_NAME;
+				TRACE_BUG(21, 7);
+			}
 #if _FS_LOCK
-			else
+			else {
 				res = chk_lock(&dj, (mode & ~FA_READ) ? 1 : 0);
+				TRACE_BUG(21, 6);
+			}
 #endif
 		}
+
+		TRACE_BUG(21, 8);
+
 		/* Create or Open a file */
 		if (mode & (FA_CREATE_ALWAYS | FA_OPEN_ALWAYS | FA_CREATE_NEW)) {
 			DWORD dw, cl;
@@ -2493,37 +2506,59 @@ FRESULT f_open (
 				if (res == FR_NO_FILE)			/* There is no file to open, create a new entry */
 #if _FS_LOCK
 					res = enq_lock() ? dir_register(&dj) : FR_TOO_MANY_OPEN_FILES;
+
+				TRACE_BUG(21, 9);
 #else
 					res = dir_register(&dj);
 #endif
+				TRACE_BUG(21, 10);
 				mode |= FA_CREATE_ALWAYS;		/* File is created */
 				dir = dj.dir;					/* New entry */
 			}
-			else {								/* Any object is already existing */
+			else {
+			  TRACE_BUG(21, 11);
+			  /* Any object is already existing */
 				if (dir[DIR_Attr] & (AM_RDO | AM_DIR)) {	/* Cannot overwrite it (R/O or DIR) */
 					res = FR_DENIED;
 				} else {
 					if (mode & FA_CREATE_NEW)	/* Cannot create as new file */
 						res = FR_EXIST;
 				}
+
+				TRACE_BUG(21, 12);
 			}
+
+			TRACE_BUG(21, 13);
+
 			if (res == FR_OK && (mode & FA_CREATE_ALWAYS)) {	/* Truncate it if overwrite mode */
+			  TRACE_BUG(21, 14);
 				dw = GET_FATTIME();				/* Created time */
+				TRACE_BUG(21, 15);
 				ST_DWORD(dir+DIR_CrtTime, dw);
+				TRACE_BUG(21, 16);
 				dir[DIR_Attr] = 0;				/* Reset attribute */
+				TRACE_BUG(21, 17);
 				ST_DWORD(dir+DIR_FileSize, 0);	/* size = 0 */
+				TRACE_BUG(21, 18);
 				cl = ld_clust(dj.fs, dir);		/* Get start cluster */
+				TRACE_BUG(21, 19);
 				st_clust(dir, 0);				/* cluster = 0 */
+				TRACE_BUG(21, 20);
 				dj.fs->wflag = 1;
+				TRACE_BUG(21, 21);
 				if (cl) {						/* Remove the cluster chain if exist */
 					dw = dj.fs->winsect;
+					TRACE_BUG(21, 22);
 					res = remove_chain(dj.fs, cl);
+					TRACE_BUG(21, 23);
 					if (res == FR_OK) {
 						dj.fs->last_clust = cl - 1;	/* Reuse the cluster hole */
 						res = move_window(dj.fs, dw);
+						TRACE_BUG(21, 24);
 					}
 				}
 			}
+			TRACE_BUG(21, 25);
 		}
 		else {	/* Open an existing file */
 			if (res == FR_OK) {					/* Follow succeeded */
@@ -2534,6 +2569,7 @@ FRESULT f_open (
 						res = FR_DENIED;
 				}
 			}
+			TRACE_BUG(21, 26);
 		}
 		if (res == FR_OK) {
 			if (mode & FA_CREATE_ALWAYS)		/* Set file change flag if created or overwritten */
@@ -2542,11 +2578,15 @@ FRESULT f_open (
 			fp->dir_ptr = dir;
 #if _FS_LOCK
 			fp->lockid = inc_lock(&dj, (mode & ~FA_READ) ? 1 : 0);
+			TRACE_BUG(21, 27);
 			if (!fp->lockid) res = FR_INT_ERR;
 #endif
 		}
 
 #else				/* R/O configuration */
+
+		TRACE_BUG(21, 28);
+
 		if (res == FR_OK) {					/* Follow succeeded */
 			dir = dj.dir;
 			if (!dir) {						/* Current directory itself */
@@ -2557,7 +2597,12 @@ FRESULT f_open (
 			}
 		}
 #endif
+
+		TRACE_BUG(21, 29);
+
 		FREE_BUF();
+
+		TRACE_BUG(21, 30);
 
 		if (res == FR_OK) {
 			fp->flag = mode;					/* File access mode */
@@ -2572,6 +2617,8 @@ FRESULT f_open (
 			fp->fs = dj.fs;	 					/* Validate file object */
 			fp->id = fp->fs->id;
 		}
+
+		TRACE_BUG(21, 31);
 	}
 
 	LEAVE_FF5(dj.fs, res);
