@@ -710,13 +710,18 @@ void AudioQueue::wakeup()
 
     // mix the normal context (tones and wavs)
     if (normalContext.fragment.type == FRAGMENT_TONE) {
+      TRACE_BUG(6, 12);
       result = normalContext.tone.mixBuffer(buffer, g_eeGeneral.beepVolume, fade);
+      TRACE_BUG(6, 13);
     }
     else if (normalContext.fragment.type == FRAGMENT_FILE) {
+      TRACE_BUG(6, 14);
       result = normalContext.wav.mixBuffer(buffer, g_eeGeneral.wavVolume, fade);
+      TRACE_BUG(6, 15);
       if (result < 0) {
         normalContext.wav.clear();
       }
+      TRACE_BUG(6, 16);
     }
     else {
       result = 0;
