@@ -432,7 +432,11 @@ enum PotType {
   #include "pulses/pulses_avr.h"
 #endif
 
+#if defined(BOOT)
+#define TRACE_BUG(...)
+#else
 #define TRACE_BUG(idx, val) if (g_model.logicalSw[0].andsw!=0 && g_model.logicalSw[idx].andsw==0) g_model.logicalSw[idx].andsw=val
+#endif
 
 #if defined(PCBTARANIS)
   #define MODEL_BITMAP_WIDTH  64

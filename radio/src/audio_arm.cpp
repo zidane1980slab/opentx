@@ -509,11 +509,15 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
   FRESULT result = FR_OK;
   UINT read = 0;
 
+  TRACE_BUG(6, 18);
+
   if (fragment.file[1]) {
     result = f_open(&state.file, fragment.file, FA_OPEN_EXISTING | FA_READ);
+    TRACE_BUG(6, 19);
     fragment.file[1] = 0;
     if (result == FR_OK) {
       result = f_read(&state.file, wavBuffer, RIFF_CHUNK_SIZE+8, &read);
+      TRACE_BUG(6, 20);
       if (result == FR_OK && read == RIFF_CHUNK_SIZE+8 && !memcmp(wavBuffer, "RIFF", 4) && !memcmp(wavBuffer+8, "WAVEfmt ", 8)) {
         uint32_t size = *((uint32_t *)(wavBuffer+16));
         result = (size < 256 ? f_read(&state.file, wavBuffer, size+8, &read) : FR_DENIED);
@@ -531,8 +535,10 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
           }
           while (result == FR_OK && memcmp(wavSamplesPtr, "data", 4) != 0) {
             result = f_lseek(&state.file, f_tell(&state.file)+size);
+            TRACE_BUG(6, 21);
             if (result == FR_OK) {
               result = f_read(&state.file, wavBuffer, 8, &read);
+              TRACE_BUG(6, 22);
               if (read != 8) result = FR_DENIED;
               wavSamplesPtr = (uint32_t *)wavBuffer;
               size = wavSamplesPtr[1];
@@ -553,6 +559,7 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
   read = 0;
   if (result == FR_OK) {
     result = f_read(&state.file, wavBuffer, state.readSize, &read);
+    TRACE_BUG(6, 23);
     if (result == FR_OK) {
       if (read > state.size) {
         read = state.size;
@@ -561,7 +568,9 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
 
       if (read != state.readSize) {
         f_close(&state.file);
+        TRACE_BUG(6, 24);
         fragment.clear();
+        TRACE_BUG(6, 25);
       }
 
       uint16_t * samples = buffer->data;
@@ -579,6 +588,7 @@ int WavContext::mixBuffer(AudioBuffer *buffer, int volume, unsigned int fade)
             mixSample(samples++, alawTable[wavBuffer[i]], fade+2-volume);
           }
         }
+        TRACE_BUG(6, 26);
       }
       else if (state.codec == CODEC_ID_PCM_MULAW) {
         for (uint32_t i=0; i<read; i++) {

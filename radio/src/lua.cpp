@@ -1923,6 +1923,8 @@ void luaDoOneRunStandalone(uint8_t evt)
 
 void luaDoOneRunPermanentScript(uint8_t evt, int i)
 {
+  TRACE_BUG(8, 6);
+
   ScriptInternalData & sid = scriptInternalData[i];
   if (sid.state == SCRIPT_OK) {
     SET_LUA_INSTRUCTIONS_COUNT(PERMANENT_SCRIPTS_MAX_INSTRUCTIONS);
@@ -1932,7 +1934,7 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
 #endif
     ScriptInputsOutputs * sio = NULL;
     if (sid.reference >= SCRIPT_MIX_FIRST && sid.reference <= SCRIPT_MIX_LAST) {
-      ScriptData & sd = g_model.scriptsData[sid.reference-SCRIPT_MIX_FIRST];
+      const ScriptData & sd = g_model.scriptsData[sid.reference-SCRIPT_MIX_FIRST];
       sio = &scriptInputsOutputs[sid.reference-SCRIPT_MIX_FIRST];
       inputsCount = sio->inputsCount;
 #if defined(SIMU) || defined(DEBUG)
@@ -1947,7 +1949,7 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
       }
     }
     else if (sid.reference >= SCRIPT_FUNC_FIRST && sid.reference <= SCRIPT_FUNC_LAST) {
-      CustomFnData & fn = g_model.funcSw[sid.reference-SCRIPT_FUNC_FIRST];
+      const CustomFnData & fn = g_model.funcSw[sid.reference-SCRIPT_FUNC_FIRST];
       if (!getSwitch(fn.swtch)) {
         return;
       }
@@ -1957,6 +1959,7 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
       lua_rawgeti(L, LUA_REGISTRYINDEX, sid.run);
     }
     else {
+      TRACE_BUG(8, 7);
 #if defined(SIMU) || defined(DEBUG)
       filename = "[telem]";
 #endif
@@ -1972,7 +1975,9 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
         return;
       }
     }
+    TRACE_BUG(8, 8);
     if (lua_pcall(L, inputsCount, sio ? sio->outputsCount : 0, 0) == 0) {
+      TRACE_BUG(8, 9);
       if (sio) {
         for (int j=sio->outputsCount-1; j>=0; j--) {
           if (!lua_isnumber(L, -1)) {
@@ -1983,6 +1988,7 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
           sio->outputs[j].value = lua_tointeger(L, -1);
           lua_pop(L, 1);
         }
+        TRACE_BUG(8, 10);
       }
     }
     else {
@@ -1994,10 +2000,12 @@ void luaDoOneRunPermanentScript(uint8_t evt, int i)
         TRACE("Script %8s error: %s", filename, lua_tostring(L, -1));
         sid.state = SCRIPT_SYNTAX_ERROR;
       }
+      TRACE_BUG(8, 11);
     }
 
     if (sid.state != SCRIPT_OK) {
       luaFree(sid);
+      TRACE_BUG(8, 12);
     }
     else {
       if (instructionsPercent > sid.instructions) {
@@ -2031,6 +2039,8 @@ void luaDoGc()
 
 void luaTask(uint8_t evt)
 {
+  TRACE_BUG(8, 1);
+
   lcd_locked = false;
 
   uint32_t t0 = get_tmr10ms();
@@ -2067,7 +2077,9 @@ void luaTask(uint8_t evt)
 
     for (int i=0; i<luaScriptsCount; i++) {
       PROTECT_LUA() {
+        TRACE_BUG(8, 2);
         luaDoOneRunPermanentScript(evt, i);
+        TRACE_BUG(8, 3);
       }
       else {
         luaDisable();
@@ -2077,7 +2089,11 @@ void luaTask(uint8_t evt)
     }
   }
 
+  TRACE_BUG(8, 4);
+
   luaDoGc();
+
+  TRACE_BUG(8, 5);
 
   t0 = get_tmr10ms() - t0;
   if (t0 > maxLuaDuration) {

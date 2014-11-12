@@ -543,21 +543,19 @@ void evalInputs(uint8_t mode)
 uint8_t mixerCurrentFlightMode;
 void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
 {
-  TRACE_BUG(5, 1);
-
   evalInputs(mode);
 
-  TRACE_BUG(5, 2);
+  TRACE_BUG(5, 16);
 
   if (tick10ms) evalLogicalSwitches(mode==e_perout_mode_normal);
 
-  TRACE_BUG(5, 3);
+  TRACE_BUG(5, 17);
 
 #if defined(MODULE_ALWAYS_SEND_PULSES)
   checkStartupWarnings();
 #endif
 
-  TRACE_BUG(5, 4);
+  TRACE_BUG(5, 18);
 
 #if defined(HELI)
   if (g_model.swashR.value) {
@@ -621,11 +619,11 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
   }
 #endif
 
-  TRACE_BUG(5, 5);
+  TRACE_BUG(5, 6);
 
   memclear(chans, sizeof(chans));        // All outputs to 0
 
-  TRACE_BUG(5, 6);
+  TRACE_BUG(5, 7);
 
   //========== MIXER LOOP ===============
   uint8_t lv_mixWarning = 0;
@@ -978,8 +976,6 @@ uint8_t   flightModeTransitionLast = 255;
 
 void evalMixes(uint8_t tick10ms)
 {
-  TRACE_BUG(5, 9);
-
 #if defined(PCBGRUVIN9X) && defined(DEBUG) && !defined(VOICE)
   PORTH |= 0x40; // PORTH:6 LOW->HIGH signals start of mixer interrupt
 #endif

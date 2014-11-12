@@ -336,6 +336,8 @@ static void disable_pa10_ppm()
 
 extern "C" void TIM1_CC_IRQHandler()
 {
+  TRACE_BUG(11, 1);
+
   TIM1->DIER &= ~TIM_DIER_CC2IE ;         // stop this interrupt
   TIM1->SR &= ~TIM_SR_CC2IF ;                             // Clear flag
 
@@ -358,10 +360,12 @@ extern "C" void TIM1_CC_IRQHandler()
   else {
     TIM1->DIER |= TIM_DIER_CC2IE ;  // Enable this interrupt
   }
+  TRACE_BUG(11, 2);
 }
 
 extern "C" void TIM1_UP_TIM10_IRQHandler()
 {
+  TRACE_BUG(12, 1);
   TIM1->SR &= ~TIM_SR_UIF ;                               // Clear flag
 
   TIM1->ARR = *ppmStreamPtr[INTERNAL_MODULE]++ ;
@@ -370,6 +374,7 @@ extern "C" void TIM1_UP_TIM10_IRQHandler()
     TIM1->SR &= ~TIM_SR_CC2IF ;                     // Clear this flag
     TIM1->DIER |= TIM_DIER_CC2IE ;  // Enable this interrupt
   }
+  TRACE_BUG(12, 2);
 }
 
 static void init_pa7_pxx()
@@ -578,6 +583,8 @@ static void disable_pa7_ppm()
 
 extern "C" void TIM8_CC_IRQHandler()
 {
+  TRACE_BUG(13, 1);
+
   TIM8->DIER &= ~TIM_DIER_CC2IE ;         // stop this interrupt
   TIM8->SR &= ~TIM_SR_CC2IF ;                             // Clear flag
 
@@ -610,10 +617,13 @@ extern "C" void TIM8_CC_IRQHandler()
   else {
     TIM8->DIER |= TIM_DIER_CC2IE ;  // Enable this interrupt
   }
+  TRACE_BUG(13, 2);
 }
 
 extern "C" void TIM8_UP_TIM13_IRQHandler()
 {
+  TRACE_BUG(14, 1);
+
   TIM8->SR &= ~TIM_SR_UIF ;                               // Clear flag
 
   TIM8->ARR = *ppmStreamPtr[EXTERNAL_MODULE]++ ;
@@ -621,5 +631,7 @@ extern "C" void TIM8_UP_TIM13_IRQHandler()
     TIM8->SR &= ~TIM_SR_CC2IF ;                     // Clear this flag
     TIM8->DIER |= TIM_DIER_CC2IE ;  // Enable this interrupt
   }
+
+  TRACE_BUG(14, 2);
 }
 

@@ -41,6 +41,7 @@
 #include "../../CoOS/kernel/CoOS.h"
 #include "hal.h"
 #include "debug.h"
+#include "../../opentx.h"
 
 /* Definitions for MMC/SDC command */
 #define CMD0    (0x40+0)        /* GO_IDLE_STATE */
@@ -716,6 +717,8 @@ DSTATUS disk_status (
 
 int8_t SD_ReadSectors(uint8_t *buff, uint32_t sector, uint32_t count)
 {
+  TRACE_BUG(19, 1);
+
   if (!(CardType & CT_BLOCK)) sector *= 512;      /* Convert to byte address if needed */
 
   IO_MUTEX_ENTER();
@@ -749,6 +752,8 @@ int8_t SD_ReadSectors(uint8_t *buff, uint32_t sector, uint32_t count)
 
   IO_MUTEX_LEAVE();
 
+  TRACE_BUG(19, 2);
+
   return count ? -1 : 0;
 }
 
@@ -774,6 +779,8 @@ DRESULT disk_read (
 
 int8_t SD_WriteSectors(const uint8_t *buff, uint32_t sector, uint32_t count)
 {
+  TRACE_BUG(18, 1);
+
   if (!(CardType & CT_BLOCK)) sector *= 512;      /* Convert to byte address if needed */
 
   IO_MUTEX_ENTER();
@@ -806,6 +813,8 @@ int8_t SD_WriteSectors(const uint8_t *buff, uint32_t sector, uint32_t count)
   TRACE_SD_CARD_EVENT((count != 0), sd_SD_WriteSectors, (count << 24) + ((sector/((CardType & CT_BLOCK) ? 1 : 512)) & 0x00FFFFFF));
 
   IO_MUTEX_LEAVE();
+
+  TRACE_BUG(18, 2);
 
   return count ? -1 : 0;
 }

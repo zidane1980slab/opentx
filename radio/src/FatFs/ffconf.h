@@ -52,9 +52,9 @@ extern "C" {
 
 
 #if defined(BOOT)
-  #define	_USE_STRFUNC	0	/* 0:Disable or 1-2:Enable */
+  #define _USE_STRFUNC	0	/* 0:Disable or 1-2:Enable */
 #else
-  #define	_USE_STRFUNC	1	/* 0:Disable or 1-2:Enable */
+  #define _USE_STRFUNC	1	/* 0:Disable or 1-2:Enable */
 #endif
 /* This option switches string functions, f_gets(), f_putc(), f_puts() and
 /  f_printf().

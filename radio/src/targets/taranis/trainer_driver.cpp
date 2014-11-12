@@ -112,6 +112,7 @@ void stop_trainer_capture()
 
 extern "C" void TIM3_IRQHandler()
 {
+  TRACE_BUG(16, 1);
   uint16_t capture ;
   static uint16_t lastCapt ;
   uint16_t val ;
@@ -166,5 +167,7 @@ extern "C" void TIM3_IRQHandler()
       TIM3->DIER |= TIM_DIER_CC2IE ;  // Enable this interrupt
     }
   }
+  TRACE_BUG(16, 2);
+
 }
 

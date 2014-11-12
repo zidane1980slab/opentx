@@ -118,6 +118,8 @@ void debugPutc(const char c)
 
 extern "C" void USART3_IRQHandler(void)
 {
+  TRACE_BUG(17, 1);
+
   // Send
   if (USART_GetITStatus(UART3, USART_IT_TXE) != RESET) {
     uint8_t txchar;
@@ -141,5 +143,7 @@ extern "C" void USART3_IRQHandler(void)
 
     status = USART3->SR;
   }
+
+  TRACE_BUG(17, 2);
 }
 

@@ -96,8 +96,10 @@ void interrupt5ms()
 
 extern "C" void TIM8_TRG_COM_TIM14_IRQHandler()
 {
+  TRACE_BUG(10, 1);
   TIM14->SR &= ~TIM_SR_UIF ;
-  interrupt5ms() ;
+  interrupt5ms();
+  TRACE_BUG(10, 2);
 }
 
 #if !defined(SIMU)

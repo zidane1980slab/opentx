@@ -100,6 +100,9 @@ void telemetryPutc(const char c)
 
 extern "C" void USART2_IRQHandler()
 {
+
+  TRACE_BUG(15, 1);
+
   uint32_t status;
   uint8_t data;
 
@@ -113,6 +116,8 @@ extern "C" void USART2_IRQHandler()
 
     status = SPORT->SR;
   }
+
+  TRACE_BUG(15, 2);
 }
 
 #endif

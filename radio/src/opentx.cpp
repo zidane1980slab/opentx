@@ -3541,16 +3541,24 @@ void mixerTask(void * pdata)
 
   while(1) {
 
+    TRACE_BUG(5, 1);
+
     if (!s_pulses_paused) {
       uint16_t t0 = getTmr2MHz();
 
       CoEnterMutexSection(mixerMutex);
+      TRACE_BUG(5, 2);
       doMixerCalculations();
+      TRACE_BUG(5, 3);
       CoLeaveMutexSection(mixerMutex);
+
+      TRACE_BUG(5, 4);
 
 #if defined(FRSKY) || defined(MAVLINK)
       telemetryWakeup();
 #endif
+
+      TRACE_BUG(5, 5);
 
       if (heartbeat == HEART_WDT_CHECK) {
         wdt_reset();
