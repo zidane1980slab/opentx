@@ -99,6 +99,11 @@ uint32_t transSpeed; */
 #if !defined(BOOT)
 int ff_cre_syncobj (BYTE vol, _SYNC_t *mutex)
 {
+  static bool done = false;
+  if (done == true) {
+    g_eeGeneral.unexpectedShutdown = true;
+  }
+  done = true;
   *mutex = CoCreateMutex();
   return 1;
 }

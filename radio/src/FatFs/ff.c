@@ -144,12 +144,28 @@
 #endif
 #define	ENTER_FF(fs)		{ TRACE_BUG(20, 17); if (!lock_fs(fs)) { TRACE_BUG(20, 16); return FR_TIMEOUT; } }
 #define	LEAVE_FF(fs, res)	{ unlock_fs(fs, res); TRACE_BUG(20, 18); return res; }
+#define LEAVE_FF2(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 15); return res; }
+#define LEAVE_FF3(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 14); return res; }
+#define LEAVE_FF4(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 21); return res; }
+#define LEAVE_FF5(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 22); return res; }
+#define LEAVE_FF6(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 23); return res; }
+#define LEAVE_FF7(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 24); return res; }
+#define LEAVE_FF8(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 25); return res; }
+#define LEAVE_FF9(fs, res)       { unlock_fs(fs, res); TRACE_BUG(20, 26); return res; }
 #else
 #define	ENTER_FF(fs)
 #define LEAVE_FF(fs, res)	return res
+#define LEAVE_FF2(fs, res)       return res
+#define LEAVE_FF3(fs, res)       return res
+#define LEAVE_FF4(fs, res)       return res
+#define LEAVE_FF5(fs, res)       return res
+#define LEAVE_FF6(fs, res)       return res
+#define LEAVE_FF7(fs, res)       return res
+#define LEAVE_FF8(fs, res)       return res
+#define LEAVE_FF9(fs, res)       return res
 #endif
 
-#define	ABORT(fs, res)		{ fp->err = (BYTE)(res); TRACE_BUG(20, 19); LEAVE_FF(fs, res); }
+#define	ABORT(fs, res)		{ fp->err = (BYTE)(res); TRACE_BUG(20, 19); LEAVE_FF2(fs, res); }
 
 
 /* Definitions of sector size */
@@ -2423,7 +2439,7 @@ FRESULT f_mount (
 	if (!fs || opt != 1) return FR_OK;	/* Do not mount now, it will be mounted later */
 
 	res = find_volume(&fs, &path, 0);	/* Force mounted the volume */
-	LEAVE_FF(fs, res);
+	LEAVE_FF4(fs, res);
 }
 
 
@@ -2558,7 +2574,7 @@ FRESULT f_open (
 		}
 	}
 
-	LEAVE_FF(dj.fs, res);
+	LEAVE_FF5(dj.fs, res);
 }
 
 
@@ -2586,14 +2602,14 @@ FRESULT f_read (
 	*br = 0;	/* Clear read byte counter */
 
 	res = validate(fp);							/* Check validity */
-	if (res != FR_OK) LEAVE_FF(fp->fs, res);
+	if (res != FR_OK) LEAVE_FF6(fp->fs, res);
 	if (fp->err)	{							/* Check error */
 	  TRACE_BUG(20, 2);
-		LEAVE_FF(fp->fs, (FRESULT)fp->err);
+		LEAVE_FF8(fp->fs, (FRESULT)fp->err);
 	}
 	if (!(fp->flag & FA_READ))  {					/* Check access mode */
 	  TRACE_BUG(20, 3);
-		LEAVE_FF(fp->fs, FR_DENIED);
+		LEAVE_FF9(fp->fs, FR_DENIED);
 	}
 	remain = fp->fsize - fp->fptr;
 	if (btr > remain) btr = (UINT)remain;		/* Truncate btr by remaining bytes */
@@ -2674,7 +2690,7 @@ FRESULT f_read (
 #endif
 	}
 
-	LEAVE_FF(fp->fs, FR_OK);
+	LEAVE_FF3(fp->fs, FR_OK);
 
 	TRACE_BUG(20, 20);
 }
