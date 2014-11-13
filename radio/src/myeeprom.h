@@ -1771,9 +1771,9 @@ PACK(typedef struct t_ModelData {
   ExpoData  expoData[MAX_EXPOS];
   
   CURVDATA  curves[MAX_CURVES];
-  int8_t    points[NUM_POINTS];
-  
+  int8_t    points[NUM_POINTS-9];
   LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
+  int8_t garbage[9];
   CustomFnData funcSw[NUM_CFN];
   SwashRingData swashR;
   FlightModeData flightModeData[MAX_FLIGHT_MODES];
