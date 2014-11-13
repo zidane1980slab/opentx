@@ -97,6 +97,7 @@ uint32_t transSpeed; */
 /* Lock / unlock functions                                               */
 /*-----------------------------------------------------------------------*/
 #if !defined(BOOT)
+OS_MutexID FatFsMutex;
 int ff_cre_syncobj (BYTE vol, _SYNC_t *mutex)
 {
   static bool done = false;
@@ -105,18 +106,30 @@ int ff_cre_syncobj (BYTE vol, _SYNC_t *mutex)
   }
   done = true;
   *mutex = CoCreateMutex();
+  FatFsMutex = *mutex;
+  if (*mutex < 0)
+    g_eeGeneral.unexpectedShutdown = true;
   return 1;
 }
 
 int ff_req_grant (_SYNC_t mutex)
 {
-  CoEnterMutexSection(mutex);
+  if (mutex != FatFsMutex)
+    g_eeGeneral.unexpectedShutdown = true;
+
+  if (CoEnterMutexSection(mutex) != 0)
+    g_eeGeneral.unexpectedShutdown = true;
+
   return 1;
 }
 
 void ff_rel_grant (_SYNC_t mutex)
 {
-  CoLeaveMutexSection(mutex);
+  if (mutex != FatFsMutex)
+    g_eeGeneral.unexpectedShutdown = true;
+
+  if (CoLeaveMutexSection(mutex) != 0)
+    g_eeGeneral.unexpectedShutdown = true;
 }
 
 int ff_del_syncobj (_SYNC_t mutex)
