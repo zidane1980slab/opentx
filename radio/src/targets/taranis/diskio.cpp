@@ -114,7 +114,7 @@ int ff_cre_syncobj (BYTE vol, _SYNC_t *mutex)
 
 int ff_req_grant (_SYNC_t mutex)
 {
-  if (mutex != FatFsMutex)
+  if (1/*mutex != FatFsMutex*/)
     g_eeGeneral.unexpectedShutdown = true;
 
   if (CoEnterMutexSection(mutex) != 0)
