@@ -102,23 +102,23 @@ int ff_cre_syncobj (BYTE vol, _SYNC_t *mutex)
 {
   static bool done = false;
   if (done == true) {
-    g_eeGeneral.unexpectedShutdown = true;
+    unexpectedShutdown = true;
   }
   done = true;
   *mutex = CoCreateMutex();
   FatFsMutex = *mutex;
   if (*mutex < 0)
-    g_eeGeneral.unexpectedShutdown = true;
+    unexpectedShutdown = true;
   return 1;
 }
 
 int ff_req_grant (_SYNC_t mutex)
 {
-  if (1/*mutex != FatFsMutex*/)
-    g_eeGeneral.unexpectedShutdown = true;
+  if (mutex != FatFsMutex)
+    unexpectedShutdown = true;
 
   if (CoEnterMutexSection(mutex) != 0)
-    g_eeGeneral.unexpectedShutdown = true;
+    unexpectedShutdown = true;
 
   return 1;
 }
@@ -126,10 +126,10 @@ int ff_req_grant (_SYNC_t mutex)
 void ff_rel_grant (_SYNC_t mutex)
 {
   if (mutex != FatFsMutex)
-    g_eeGeneral.unexpectedShutdown = true;
+    unexpectedShutdown = true;
 
   if (CoLeaveMutexSection(mutex) != 0)
-    g_eeGeneral.unexpectedShutdown = true;
+    unexpectedShutdown = true;
 }
 
 int ff_del_syncobj (_SYNC_t mutex)
