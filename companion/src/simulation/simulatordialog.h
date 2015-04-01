@@ -50,6 +50,12 @@ class SimulatorDialog : public QDialog
     unsigned int flags;
     lcdWidget * lcd;
     QGraphicsView * leftStick, * rightStick;
+    QVector<QSlider *> switchSliders;
+    QVector<QLabel *> switchLabels;
+    QVector<QDial *> potDials;
+    QVector<QLabel *> potLabels;
+    QVector<QDial *> sliderDials;
+    QVector<QLabel *> sliderLabels;
     QDial * dialP_1, * dialP_2, * dialP_3, * dialP_4;
     mySlider * trimHLeft, * trimVLeft, * trimHRight, * trimVRight;
     QLabel * leftXPerc, * rightXPerc, * leftYPerc, * rightYPerc;

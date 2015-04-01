@@ -197,6 +197,83 @@ SimulatorDialogTaranis::SimulatorDialogTaranis(QWidget * parent, SimulatorInterf
   connect(ui->trimHL_L, SIGNAL(released()), this, SLOT(onTrimReleased()));
   connect(ui->trimVL_U, SIGNAL(released()), this, SLOT(onTrimReleased()));
   connect(ui->trimVL_D, SIGNAL(released()), this, SLOT(onTrimReleased()));
+  
+  GeneralSettings generalSettings;
+  int physSw = GetCurrentFirmware()->getCapability(Switches);
+  for (int i=0; i<physSw; i++) {
+    if (generalSettings.switchConfig[i] != GeneralSettings::SWITCH_NONE) {
+      QSlider * slider = new QSlider(this);
+      slider->setProperty("index", i);
+      slider->setOrientation(Qt::Vertical);
+      slider->setMinimum(0);
+      slider->setInvertedAppearance(true);
+      slider->setTickPosition(QSlider::TicksBothSides);
+      slider->setMinimumSize(QSize(30, 50));
+      slider->setMaximumSize(QSize(50, 50));
+      slider->setSingleStep(1);
+      slider->setPageStep(1);
+      slider->setTickInterval(1);
+      slider->setMaximum(generalSettings.switchConfig[i] == GeneralSettings::SWITCH_3POS ? 2 : 1);
+      switchSliders << slider;
+      QLabel * label = new QLabel(this);
+      label->setText(switchesX9D[i]);
+      switchLabels << label;
+      ui->switchesLayout->addWidget(slider, 2*(i/6), i%6);
+      ui->switchesLayout->setAlignment(slider, Qt::AlignCenter);
+      ui->switchesLayout->addWidget(label, 2*(i/6)+1, i%6);
+      ui->switchesLayout->setAlignment(label, Qt::AlignCenter);
+    }
+  }
+  
+  int physPots = GetCurrentFirmware()->getCapability(Pots);
+  for (int i=0; i<physPots; i++) {
+    if (generalSettings.potConfig[i] != GeneralSettings::POT_NONE) {
+      QDial * dial = new QDial(this);
+      dial->setProperty("index", i);
+      dial->setMinimum(-1024);
+      dial->setMaximum(1024);
+      dial->setMinimumSize(QSize(42, 42));
+      dial->setMaximumSize(QSize(42, 42));
+      dial->setNotchesVisible(true);
+      dial->setNotchTarget(64);
+      dial->setSingleStep(1);
+      dial->setPageStep(128);
+
+      potDials << dial;
+      QLabel * label = new QLabel(this);
+      label->setText(AnalogString(i+4));
+      potLabels << label;
+      ui->potsLayout->addWidget(dial, 0, i);
+      ui->potsLayout->setAlignment(dial, Qt::AlignCenter);
+      ui->potsLayout->addWidget(label, 1, i);
+      ui->potsLayout->setAlignment(label, Qt::AlignCenter);
+    }
+  }
+  
+  int physSliders = GetCurrentFirmware()->getCapability(Sliders);
+  for (int i=0; i<physSliders; i++) {
+    if (generalSettings.sliderConfig[i] != GeneralSettings::SLIDER_NONE) {
+      QDial * dial = new QDial(this);
+      dial->setProperty("index", i);
+      dial->setMinimum(-1024);
+      dial->setMaximum(1024);
+      dial->setMinimumSize(QSize(42, 42));
+      dial->setMaximumSize(QSize(42, 42));
+      dial->setNotchesVisible(true);
+      dial->setNotchTarget(64);
+      dial->setSingleStep(1);
+      dial->setPageStep(128);
+
+      sliderDials << dial;
+      QLabel * label = new QLabel(this);
+      label->setText(AnalogString(i+physPots+4));
+      sliderLabels << label;
+      ui->potsLayout->addWidget(dial, 2, i);
+      ui->potsLayout->setAlignment(dial, Qt::AlignCenter);
+      ui->potsLayout->addWidget(label, 3, i);
+      ui->potsLayout->setAlignment(label, Qt::AlignCenter);
+    }
+  }
 }
 
 SimulatorDialogTaranis::~SimulatorDialogTaranis()
