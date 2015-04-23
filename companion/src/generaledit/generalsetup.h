@@ -61,6 +61,9 @@ class GeneralSetupPanel : public GeneralPanel
 
     void on_battwarningDSB_editingFinished();
     void on_contrastSB_editingFinished();
+    void on_vBatMinDSB_editingFinished();
+    void on_vBatMaxDSB_editingFinished();
+    
 
 
   private:

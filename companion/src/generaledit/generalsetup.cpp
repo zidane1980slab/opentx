@@ -197,6 +197,15 @@ GeneralSetupPanel::GeneralSetupPanel(QWidget * parent, GeneralSettings & general
     ui->splashScreenChkB->setChecked(!generalSettings.splashMode);
   }
 
+  if (!GetCurrentFirmware()->getCapability(HasBatMeterRange)) {
+    ui->batMeterRangeLabel->hide();
+    ui->HasBatMeterMinRangeLabel->hide();
+    ui->HasBatMeterMaxRangeLabel->hide();
+    ui->vBatMinDSB->hide();
+    ui->vBatMaxDSB->hide();
+  
+  }
+
   setValues();
 
   lock = false;
@@ -352,6 +361,8 @@ void GeneralSetupPanel::setValues()
   ui->speakerPitchSB->setValue(generalSettings.speakerPitch);
   ui->hapticStrength->setValue(generalSettings.hapticStrength);
   ui->hapticmodeCB->setCurrentIndex(generalSettings.hapticMode+2);
+  ui->vBatMinDSB->setValue((double)(generalSettings.vBatMin + 90) / 10);
+  ui->vBatMaxDSB->setValue((double)(generalSettings.vBatMax + 120) / 10);
 }
 
 void GeneralSetupPanel::on_faimode_CB_stateChanged(int)
@@ -612,5 +623,17 @@ void GeneralSetupPanel::on_blAlarm_ChkB_stateChanged()
 void GeneralSetupPanel::stickReverseEdited()
 {
   generalSettings.stickReverse = ((int)ui->stickReverse1->isChecked()) | ((int)ui->stickReverse2->isChecked()<<1) | ((int)ui->stickReverse3->isChecked()<<2) | ((int)ui->stickReverse4->isChecked()<<3);
+  emit modified();
+}
+
+void GeneralSetupPanel::on_vBatMinDSB_editingFinished()
+{
+  generalSettings.vBatMin = ui->vBatMinDSB->value() * 10 - 90;
+  emit modified();
+}
+
+void GeneralSetupPanel::on_vBatMaxDSB_editingFinished()
+{
+  generalSettings.vBatMax = ui->vBatMaxDSB->value() * 10 - 120;
   emit modified();
 }
