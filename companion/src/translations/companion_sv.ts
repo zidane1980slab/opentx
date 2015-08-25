@@ -453,7 +453,7 @@ Behöver inte vara samma som menyspråk</translation>
     </message>
     <message>
         <source>The profile specific folder,  if set, will override general Backup folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Om en folder anges för profilen så används denna  istället för standardfoldern för säkerhetskopiering</translation>
     </message>
     <message>
         <source>Backup folder</source>
@@ -461,11 +461,11 @@ Behöver inte vara samma som menyspråk</translation>
     </message>
     <message>
         <source>If set it will override the application general setting</source>
-        <translation type="unfinished"></translation>
+        <translation>Används  istället för standardfoldern för säkerhetskopiering</translation>
     </message>
     <message>
         <source>if set, will override general backup enable</source>
-        <translation type="unfinished"></translation>
+        <translation>vid aktivering åsidosätts standardfoldern för säkerhetskopiering</translation>
     </message>
     <message>
         <source>Simulator Volume Gain</source>
@@ -1523,43 +1523,43 @@ Behöver inte vara samma som menyspråk</translation>
     </message>
     <message>
         <source>Simple 4-CH</source>
-        <translation>Enkel 4kanal</translation>
+        <translation>Enkel 4-kanalare</translation>
     </message>
     <message>
         <source>T-Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Gas-klippning</translation>
     </message>
     <message>
         <source>Sticky T-Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Klistrig Gasklippning</translation>
     </message>
     <message>
         <source>Elevon\Delta</source>
-        <translation type="unfinished"></translation>
+        <translation>Elevon\Delta</translation>
     </message>
     <message>
         <source>Heli Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Helikopter</translation>
     </message>
     <message>
         <source>Heli Setup with gyro gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Helikopter med gyro-gainkontroll</translation>
     </message>
     <message>
         <source>Gyro gain control</source>
-        <translation type="unfinished"></translation>
+        <translation>Gyro-gainkontroll</translation>
     </message>
     <message>
         <source>Heli Setup (Futaba&apos;s channel assignment style)</source>
-        <translation type="unfinished"></translation>
+        <translation>Helikopter (Futabas kanaltilldelning)</translation>
     </message>
     <message>
         <source>Heli Setup with gyro gain control (Futaba&apos;s channel assignment style)</source>
-        <translation type="unfinished"></translation>
+        <translation>Helikopter med gyro-gainkontroll (Futabas kanaltilldelning)</translation>
     </message>
     <message>
         <source>Gyro gain control (Futaba&apos;s channel assignment style)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gyro-gainkontroll (Futabas kanaltilldelning)</translation>
     </message>
     <message>
         <source>Servo Test</source>
@@ -5106,15 +5106,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Output type</source>
-        <translation type="unfinished"></translation>
+        <translation>Outputtyp</translation>
     </message>
     <message>
         <source>Open Drain</source>
-        <translation type="unfinished"></translation>
+        <translation>Open Drain</translation>
     </message>
     <message>
         <source>Push Pull</source>
-        <translation type="unfinished"></translation>
+        <translation>Push Pull</translation>
     </message>
 </context>
 <context>
@@ -8327,7 +8327,7 @@ Gasen reverseras om alternativet väljs. Tomgång ligger då uppåt. Trim och ga
     </message>
     <message>
         <source>Totalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Summera</translation>
     </message>
     <message>
         <source>Speed (ft/s)</source>
@@ -8573,7 +8573,7 @@ Gasen reverseras om alternativet väljs. Tomgång ligger då uppåt. Trim och ga
     </message>
     <message>
         <source>When enabled, sends any non-blank values as simulated telemetry data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vid aktivering skickas alla icke-blanka värden som simulerade telemetridata.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start with &lt;span style=&quot; font-style:italic;&quot;&gt;0x&lt;/span&gt; for hex, &lt;span style=&quot; font-style:italic;&quot;&gt;0&lt;/span&gt; for octal, otherwise decimal.&lt;br/&gt;Numeric entry only. Blank values are not sent.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
