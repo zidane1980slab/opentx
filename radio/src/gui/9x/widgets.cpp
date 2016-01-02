@@ -32,7 +32,7 @@ void drawStick(coord_t centrex, int16_t xval, int16_t yval)
 #undef MARKER_WIDTH
 }
 
-void menu_lcd_onoff(coord_t x, coord_t y, uint8_t value, LcdFlags attr)
+void drawCheckBox(coord_t x, coord_t y, uint8_t value, LcdFlags attr)
 {
 #if defined(GRAPHICS)
   if (value)
@@ -83,7 +83,7 @@ select_menu_value_t selectMenuItem(coord_t x, coord_t y, const pm_char *label, c
 uint8_t onoffMenuItem(uint8_t value, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, uint8_t event )
 {
 #if defined(GRAPHICS)
-  menu_lcd_onoff(x, y, value, attr);
+  drawCheckBox(x, y, value, attr);
   return selectMenuItem(x, y, label, NULL, value, 0, 1, attr, event);
 #else
   return selectMenuItem(x, y, label, STR_OFFON, value, 0, 1, attr, event);

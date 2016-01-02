@@ -48,7 +48,7 @@ void drawColumnHeader(const char * const *headers, uint8_t index)
   lcdDrawText(17*FW, 0, headers[index], 0);
 }
 
-void menu_lcd_onoff(coord_t x, coord_t y, uint8_t value, LcdFlags attr)
+void drawCheckBox(coord_t x, coord_t y, uint8_t value, LcdFlags attr)
 {
   if (value)
     lcdDrawChar(x+1, y, '#');
@@ -120,7 +120,7 @@ select_menu_value_t selectMenuItem(coord_t x, coord_t y, const pm_char *label, c
 
 uint8_t onoffMenuItem(uint8_t value, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, uint8_t event )
 {
-  menu_lcd_onoff(x, y, value, attr);
+  drawCheckBox(x, y, value, attr);
   return selectMenuItem(x, y, label, NULL, value, 0, 1, attr, event);
 }
 

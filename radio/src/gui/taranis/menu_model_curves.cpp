@@ -177,7 +177,7 @@ void menuModelCurveOne(uint8_t event)
   }
 
   lcd_putsLeft(7*FH+1, STR_SMOOTH);
-  menu_lcd_onoff(7*FW, 7*FH+1, crv.smooth, menuVerticalPosition==3 ? INVERS : 0);
+  drawCheckBox(7 * FW, 7 * FH + 1, crv.smooth, menuVerticalPosition == 3 ? INVERS : 0);
   if (menuVerticalPosition==3) crv.smooth = checkIncDecModel(event, crv.smooth, 0, 1);
 
   switch(event) {

@@ -602,7 +602,7 @@ void menuModelSetup(uint8_t event)
 
       case ITEM_MODEL_USE_GLOBAL_FUNCTIONS:
         lcd_putsLeft(y, STR_USE_GLOBAL_FUNCS);
-        menu_lcd_onoff(MODEL_SETUP_2ND_COLUMN, y, !g_model.noGlobalFunctions, attr);
+        drawCheckBox(MODEL_SETUP_2ND_COLUMN, y, !g_model.noGlobalFunctions, attr);
         if (attr) g_model.noGlobalFunctions = !checkIncDecModel(event, !g_model.noGlobalFunctions, 0, 1);
         break;
 

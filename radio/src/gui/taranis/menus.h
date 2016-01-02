@@ -47,7 +47,7 @@ extern uint8_t noHighlightCounter;
 #define NO_HIGHLIGHT()        (noHighlightCounter > 0)
 #define START_NO_HIGHLIGHT()  do { noHighlightCounter = 25; } while(0)
 
-void menu_lcd_onoff(coord_t x, coord_t y, uint8_t value, LcdFlags attr);
+void drawCheckBox(coord_t x, coord_t y, uint8_t value, LcdFlags attr);
 
 typedef void (*MenuHandlerFunc)(uint8_t event);
 

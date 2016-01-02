@@ -646,39 +646,34 @@ enum Functions {
   FUNC_MAX
 };
 
-#if defined(OVERRIDE_CHANNEL_FUNCTION)
-  #define HAS_ENABLE_PARAM(func)    ((func) < FUNC_FIRST_WITHOUT_ENABLE)
-#else
-  #define HAS_ENABLE_PARAM(func)    ((func) < FUNC_FIRST_WITHOUT_ENABLE && (func) != FUNC_OVERRIDE_CHANNEL)
-#endif
-
 #if defined(VOICE)
-  #define IS_PLAY_FUNC(func)      ((func) >= FUNC_PLAY_SOUND && func <= FUNC_PLAY_VALUE)
+  #define IS_PLAY_FUNC(func)           ((func) >= FUNC_PLAY_SOUND && func <= FUNC_PLAY_VALUE)
 #else
-  #define IS_PLAY_FUNC(func)      ((func) == FUNC_PLAY_SOUND)
+  #define IS_PLAY_FUNC(func)           ((func) == FUNC_PLAY_SOUND)
 #endif
 
 #if defined(CPUARM)
-  #define IS_PLAY_BOTH_FUNC(func) (0)
-  #define IS_VOLUME_FUNC(func)    ((func) == FUNC_VOLUME)
+  #define IS_PLAY_BOTH_FUNC(func)      (0)
+  #define IS_VOLUME_FUNC(func)         ((func) == FUNC_VOLUME)
 #else
-  #define IS_PLAY_BOTH_FUNC(func) ((func) == FUNC_PLAY_BOTH)
-  #define IS_VOLUME_FUNC(func)    (0)
+  #define IS_PLAY_BOTH_FUNC(func)      ((func) == FUNC_PLAY_BOTH)
+  #define IS_VOLUME_FUNC(func)         (0)
 #endif
 
 #if defined(GVARS)
-  #define IS_ADJUST_GV_FUNC(func) ((func) == FUNC_ADJUST_GVAR)
+  #define IS_ADJUST_GV_FUNC(func)      ((func) == FUNC_ADJUST_GVAR)
 #else
-  #define IS_ADJUST_GV_FUNC(func) (0)
+  #define IS_ADJUST_GV_FUNC(func)      (0)
 #endif
 
 #if defined(HAPTIC)
-  #define IS_HAPTIC_FUNC(func)    ((func) == FUNC_HAPTIC)
+  #define IS_HAPTIC_FUNC(func)         ((func) == FUNC_HAPTIC)
 #else
-  #define IS_HAPTIC_FUNC(func)    (0)
+  #define IS_HAPTIC_FUNC(func)         (0)
 #endif
 
-#define HAS_REPEAT_PARAM(func)    (IS_PLAY_FUNC(func) || IS_HAPTIC_FUNC(func))
+#define HAS_ENABLE_PARAM(func)         ((func) < FUNC_FIRST_WITHOUT_ENABLE && !IS_ADJUST_GV_FUNC(func))
+#define HAS_REPEAT_PARAM(func)         (IS_PLAY_FUNC(func) || IS_HAPTIC_FUNC(func) || IS_ADJUST_GV_FUNC(func))
 
 enum ResetFunctionParam {
   FUNC_RESET_TIMER1,
@@ -708,16 +703,16 @@ enum AdjustGvarFunctionParam {
   FUNC_ADJUST_GVAR_CONSTANT,
   FUNC_ADJUST_GVAR_SOURCE,
   FUNC_ADJUST_GVAR_GVAR,
-  FUNC_ADJUST_GVAR_INC,
+  FUNC_ADJUST_GVAR_INCDEC,
 };
 
 #if defined(CPUARM)
 #if defined(PCBTARANIS)
-  #define LEN_CFN_NAME 8
-  #define CFN_SPARE_TYPE int32_t
+  #define LEN_CFN_NAME                 8
+  #define CFN_SPARE_TYPE               int32_t
 #else
-  #define LEN_CFN_NAME 6
-  #define CFN_SPARE_TYPE int16_t
+  #define LEN_CFN_NAME                 6
+  #define CFN_SPARE_TYPE               int16_t
 #endif
 PACK(typedef struct {
   int16_t  swtch:9;
@@ -731,7 +726,7 @@ PACK(typedef struct {
       int16_t val;
       uint8_t mode;
       uint8_t param;
-      CFN_SPARE_TYPE spare2;
+      CFN_SPARE_TYPE spare;
     }) all;
 
     PACK(struct {
@@ -741,20 +736,21 @@ PACK(typedef struct {
   });
   uint8_t active;
 }) CustomFunctionData;
-#define CFN_EMPTY(p)            (!(p)->swtch)
-#define CFN_SWITCH(p)           ((p)->swtch)
-#define CFN_FUNC(p)             ((p)->func)
-#define CFN_ACTIVE(p)           ((p)->active)
-#define CFN_CH_INDEX(p)         ((p)->all.param)
-#define CFN_GVAR_INDEX(p)       ((p)->all.param)
-#define CFN_TIMER_INDEX(p)      ((p)->all.param)
-#define CFN_PLAY_REPEAT(p)      ((p)->active)
-#define CFN_PLAY_REPEAT_MUL     1
-#define CFN_PLAY_REPEAT_NOSTART 0xFF
-#define CFN_GVAR_MODE(p)        ((p)->all.mode)
-#define CFN_PARAM(p)            ((p)->all.val)
-#define CFN_RESET(p)            ((p)->active=0, (p)->clear.val1=0, (p)->clear.val2=0)
-#define CFN_GVAR_CST_MAX        GVAR_LIMIT
+#define CFN_EMPTY(p)                   (!(p)->swtch)
+#define CFN_SWITCH(p)                  ((p)->swtch)
+#define CFN_FUNC(p)                    ((p)->func)
+#define CFN_ACTIVE(p)                  ((p)->active)
+#define CFN_CH_INDEX(p)                ((p)->all.param)
+#define CFN_GVAR_INDEX(p)              ((p)->all.param)
+#define CFN_TIMER_INDEX(p)             ((p)->all.param)
+#define CFN_PLAY_REPEAT(p)             ((p)->active)
+#define CFN_PLAY_REPEAT_MUL            1
+#define CFN_PLAY_REPEAT_NOSTART        0xFF
+#define CFN_GVAR_MODE(p)               ((p)->all.mode)
+#define CFN_PARAM(p)                   ((p)->all.val)
+#define CFN_RESET(p)                   ((p)->active=0, (p)->clear.val1=0, (p)->clear.val2=0)
+#define CFN_GVAR_CST_MIN               -GVAR_MAX
+#define CFN_GVAR_CST_MAX               GVAR_MAX
 #elif defined(CPUM2560)
 PACK(typedef struct {
   int8_t  swtch;

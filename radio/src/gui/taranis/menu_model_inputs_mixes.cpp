@@ -536,7 +536,7 @@ void menuModelMixOne(uint8_t event)
 
       case MIX_FIELD_TRIM:
         lcd_putsColumnLeft(COLUMN_X, y, STR_TRIM);
-        menu_lcd_onoff(COLUMN_X+MIXES_2ND_COLUMN, y, !md2->carryTrim, attr);
+        drawCheckBox(COLUMN_X + MIXES_2ND_COLUMN, y, !md2->carryTrim, attr);
         if (attr) md2->carryTrim = !checkIncDecModel(event, !md2->carryTrim, 0, 1);
         break;
 
