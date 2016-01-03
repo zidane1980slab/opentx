@@ -419,7 +419,7 @@ void evalFunctions()
                 SET_GVAR(CFN_GVAR_INDEX(cfn), CFN_PARAM(cfn), mixerCurrentFlightMode);
               }
               else if (CFN_GVAR_MODE(cfn) == FUNC_ADJUST_GVAR_GVAR) {
-                SET_GVAR(CFN_GVAR_INDEX(cfn), GVAR_VALUE(CFN_PARAM(cfn), mixerCurrentFlightMode), mixerCurrentFlightMode);
+                SET_GVAR(CFN_GVAR_INDEX(cfn), GVAR_VALUE(CFN_PARAM(cfn), getGVarFlightPhase(mixerCurrentFlightMode, CFN_PARAM(cfn))), mixerCurrentFlightMode);
               }
               else if (CFN_GVAR_MODE(cfn) == FUNC_ADJUST_GVAR_INCDEC) {
 #if defined(CPUARM)
