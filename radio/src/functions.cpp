@@ -423,7 +423,6 @@ void evalFunctions()
               }
               else if (CFN_GVAR_MODE(cfn) == FUNC_ADJUST_GVAR_INCDEC) {
 #if defined(CPUARM)
-                int val_min = -CFN_GVAR_CST_MAX, val_max = +CFN_GVAR_CST_MAX;
                 SET_GVAR(CFN_GVAR_INDEX(cfn), limit(CFN_GVAR_CST_MIN, GVAR_VALUE(CFN_GVAR_INDEX(cfn), getGVarFlightPhase(mixerCurrentFlightMode, CFN_GVAR_INDEX(cfn))) + CFN_PARAM(cfn), CFN_GVAR_CST_MAX), mixerCurrentFlightMode);
 #else
                 if (!(functionsContext.activeSwitches & switch_mask)) {
