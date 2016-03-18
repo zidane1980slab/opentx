@@ -73,11 +73,11 @@ enum menuGeneralSetupItems {
   ITEM_SETUP_INACTIVITY_ALARM,
   // ITEM_SETUP_MEMORY_WARNING,
   ITEM_SETUP_ALARM_WARNING,
-  // ITEM_SETUP_BACKLIGHT_LABEL,
-  // ITEM_SETUP_BACKLIGHT_MODE,
-  // ITEM_SETUP_BACKLIGHT_DELAY,
-  // ITEM_SETUP_BRIGHTNESS,
-  // ITEM_SETUP_FLASH_BEEP,
+  ITEM_SETUP_BACKLIGHT_LABEL,
+  ITEM_SETUP_BACKLIGHT_MODE,
+  ITEM_SETUP_BACKLIGHT_DELAY,
+  ITEM_SETUP_BRIGHTNESS,
+  ITEM_SETUP_FLASH_BEEP,
   // CASE_SPLASH_PARAM(ITEM_SETUP_DISABLE_SPLASH)
   CASE_GPS(ITEM_SETUP_TIMEZONE)
   CASE_GPS(ITEM_SETUP_GPSFORMAT)
@@ -372,7 +372,6 @@ bool menuGeneralSetup(evt_t event)
         if (attr) g_eeGeneral.inactivityTimer = checkIncDec(event, g_eeGeneral.inactivityTimer, 0, 250, EE_GENERAL); //0..250minutes
         break;
 
-#if 0
       case ITEM_SETUP_BACKLIGHT_LABEL:
         lcdDrawText(MENUS_MARGIN_LEFT, y, STR_BACKLIGHT_LABEL);
         break;
@@ -402,13 +401,6 @@ bool menuGeneralSetup(evt_t event)
           g_eeGeneral.backlightBright = 100 - b;
         }
         break;
-
-      case ITEM_SETUP_BACKLIGHT_COLOR:
-        lcdDrawText(MENUS_MARGIN_LEFT, y, STR_BLCOLOR);
-        drawSlider(RADIO_SETUP_2ND_COLUMN, y, g_eeGeneral.backlightColor, 20, attr);
-        if (attr) g_eeGeneral.backlightColor = checkIncDec(event, g_eeGeneral.backlightColor, 0, 20, EE_GENERAL | NO_INCDEC_MARKS);
-        break;
-#endif
 
 #if 0
       case ITEM_SETUP_DISABLE_SPLASH:
